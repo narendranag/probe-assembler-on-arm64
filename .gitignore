@@ -20,3 +20,8 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+
+# Compiled Object Code
+*.o 
+# Linked Executable
+*.x 
