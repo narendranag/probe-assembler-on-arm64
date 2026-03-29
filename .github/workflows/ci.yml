@@ -1,0 +1,101 @@
+name: Build ARM64 Assembly
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-24.04-arm
+    name: Build & Test (Linux ARM64)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y binutils
+
+      - name: Assemble Linux programs
+        run: |
+          for src in linux/*.s; do
+            name=$(basename "$src" .s)
+            echo "Assembling $src..."
+            as -o "linux/${name}.o" "$src"
+          done
+
+      - name: Link Linux programs
+        run: |
+          for obj in linux/*.o; do
+            name=$(basename "$obj" .o)
+            echo "Linking linux/${name}.x..."
+            ld -o "linux/${name}.x" "$obj"
+          done
+
+      - name: Test exit_code
+        run: |
+          linux/exit_code.x || true
+          EXIT_CODE=$?
+          if [ "$EXIT_CODE" -eq 42 ]; then
+            echo "PASS: exit_code returned 42"
+          else
+            echo "FAIL: exit_code returned $EXIT_CODE (expected 42)"
+            exit 1
+          fi
+
+      - name: Test hello_world
+        run: |
+          OUTPUT=$(linux/hello_world.x)
+          if [ "$OUTPUT" = "Hello World!" ]; then
+            echo "PASS: hello_world output correct"
+          else
+            echo "FAIL: got '$OUTPUT'"
+            exit 1
+          fi
+
+      - name: Test loops
+        run: |
+          OUTPUT=$(linux/loops.x)
+          EXPECTED=$(printf '%s\n' 0 1 2 3 4 5 6 7 8 9)
+          if [ "$OUTPUT" = "$EXPECTED" ]; then
+            echo "PASS: loops output correct"
+          else
+            echo "FAIL: unexpected output"
+            echo "$OUTPUT"
+            exit 1
+          fi
+
+      - name: Test conditionals
+        run: |
+          OUTPUT=$(linux/conditionals.x)
+          if [ "$OUTPUT" = "First is greater!" ]; then
+            echo "PASS: conditionals output correct"
+          else
+            echo "FAIL: got '$OUTPUT'"
+            exit 1
+          fi
+
+      - name: Test functions
+        run: |
+          OUTPUT=$(linux/functions.x)
+          EXPECTED=$(printf '7\n8')
+          if [ "$OUTPUT" = "$EXPECTED" ]; then
+            echo "PASS: functions output correct"
+          else
+            echo "FAIL: got '$OUTPUT'"
+            exit 1
+          fi
+
+      - name: Test stack
+        run: |
+          OUTPUT=$(linux/stack.x)
+          if [ "$OUTPUT" = "OK" ]; then
+            echo "PASS: stack output correct"
+          else
+            echo "FAIL: got '$OUTPUT'"
+            exit 1
+          fi
+
+      - name: Clean up
+        run: make clean
