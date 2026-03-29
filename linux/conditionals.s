@@ -19,17 +19,17 @@ _start:
 
 first_greater:
     adr     x1, msg_first
-    mov     x2, #19
+    mov     x2, #18
     b       print
 
 second_greater:
     adr     x1, msg_second
-    mov     x2, #20
+    mov     x2, #19
     b       print
 
 equal:
     adr     x1, msg_equal
-    mov     x2, #17
+    mov     x2, #16
     b       print
 
 print:

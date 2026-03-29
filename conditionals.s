@@ -22,17 +22,17 @@ _start:
 
 first_greater:
     adr     x1, msg_first
-    mov     x2, #22             // length of "First is greater!\n"
+    mov     x2, #18             // length of "First is greater!\n"
     b       print
 
 second_greater:
     adr     x1, msg_second
-    mov     x2, #23             // length of "Second is greater!\n"
+    mov     x2, #19             // length of "Second is greater!\n"
     b       print
 
 equal:
     adr     x1, msg_equal
-    mov     x2, #21             // length of "Both are equal!\n"
+    mov     x2, #16             // length of "Both are equal!\n"
     b       print
 
 print:
