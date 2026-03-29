@@ -25,5 +25,4 @@ _start:
     mov     x8, #93             // syscall: exit
     svc     #0
 
-.data
 helloworld: .ascii "Hello World!\n"

@@ -35,8 +35,10 @@ jobs:
 
       - name: Test exit_code
         run: |
-          linux/exit_code.x || true
+          set +e
+          linux/exit_code.x
           EXIT_CODE=$?
+          set -e
           if [ "$EXIT_CODE" -eq 42 ]; then
             echo "PASS: exit_code returned 42"
           else
